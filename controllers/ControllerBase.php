@@ -15,13 +15,41 @@ use League\Fractal\Manager;
  */
 class ControllerBase extends Controller
 {
-
+    /**
+     * @constant string name of api with the 400 client error
+     * @link http://www.restapitutorial.com/httpstatuscodes.html
+     *
+     */
     const CODE_WRONG_ARGS       = 'GEN-FUBARGS';
+
+    /**
+     * @constant string name of api with the 404 client error
+     *
+     */
     const CODE_NOT_FOUND        = 'GEN-LIKETHEWIND';
+
+    /**
+     * @constant string name of api with the 500 server error
+     *
+     */
     const CODE_INTERNAL_ERROR   = 'GEN-AAAGGH';
+
+    /**
+     * @constant string name of api with the 401 client error
+     *
+     */
     const CODE_UNAUTHORIZED     = 'GEN-MAYBGTFO';
+
+    /**
+     * @constant string name of api with the 403 client error
+     *
+     */
     const CODE_FORBIDDEN        = 'GEN-GTFO';
 
+    /**
+     *
+     * @var integer
+     */
     protected $statusCode = 200;
 
     /**
@@ -46,6 +74,14 @@ class ControllerBase extends Controller
         $this->statusCode = $statusCode;
         return $this;
     }
+
+    /**
+     * [respondWithItem description]
+     *
+     * @param  [type] $item     [description]
+     * @param  [type] $callback [description]
+     * @return [type]           [description]
+     */
     protected function respondWithItem($item, $callback)
     {
         $resource = new Item($item, $callback);
@@ -54,7 +90,12 @@ class ControllerBase extends Controller
 
         return $this->respondWithArray($rootScope->toArray());
     }
-
+    /**
+     * [respondWithCollection description]
+     * @param  [type] $collection [description]
+     * @param  [type] $callback   [description]
+     * @return [type]             [description]
+     */
     protected function respondWithCollection($collection, $callback)
     {
         $resource = new Collection($collection, $callback);
@@ -63,7 +104,12 @@ class ControllerBase extends Controller
 
         return $this->respondWithArray($rootScope->toArray());
     }
-
+    /**
+     * [respondWithArray description]
+     * @param  array  $array   [description]
+     * @param  array  $headers [description]
+     * @return [type]          [description]
+     */
     protected function respondWithArray(array $array, array $headers = [])
     {
         $response = Response::json($array, $this->statusCode, $headers);
@@ -73,6 +119,12 @@ class ControllerBase extends Controller
         return $response;
     }
 
+    /**
+     * [respondWithError description]
+     * @param  [type] $message   [description]
+     * @param  [type] $errorCode [description]
+     * @return [type]            [description]
+     */
     protected function respondWithError($message, $errorCode)
     {
         if ($this->statusCode === 200) {
