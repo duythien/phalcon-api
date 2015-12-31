@@ -1,0 +1,13 @@
+{
+	"name"	:	"phabricator",
+	"description"	:	"The base role for systems that serve web server",
+	"chef_type"	:	"role",
+	"json_class"	:	"Chef::Role",
+	"default_attributes"	:	{
+		"set_fqnd" : "phabricator.phanbook.dev"
+	},
+	"run_list"	:	[
+		"recipe[hostname]",
+		"recipe[phabricator]"
+	]
+}
