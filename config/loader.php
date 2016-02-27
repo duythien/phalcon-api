@@ -15,9 +15,10 @@ $loader = new Phalcon\Loader();
  * We're a registering a set of directories taken from the configuration file
  */
 $loader->registerNamespaces(
-    array(
-        'Phanbook\Controllers'  => ROOT_DIR . '/controllers/',
-        'Phanbook\Models'       => ROOT_DIR . '/models/',
-    )
+    [
+        'Phanbook\Controllers'  => ROOT_DIR . 'controllers/',
+        'Phanbook\Models'       => ROOT_DIR . 'common/models/',
+        'Phanbook\Responses'    => ROOT_DIR . 'common/responses'
+    ]
 );
 $loader->register();

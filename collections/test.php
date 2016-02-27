@@ -10,8 +10,7 @@ return call_user_func(function(){
     $testCollection = new \Phalcon\Mvc\Micro\Collection();
 
     $testCollection
-        //VERSION NUMBER SHOULD BE FIRST URL PARAMETER, ALWAYS
-        ->setPrefix('/' . VERSION . '/test')
+        ->setPrefix('/test')
         ->setHandler('Phanbook\Controllers\TestController')
         ->setLazy(true);
 

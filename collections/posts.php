@@ -11,7 +11,7 @@ return call_user_func(function(){
 
     $testCollection
         //VERSION NUMBER SHOULD BE FIRST URL PARAMETER, ALWAYS
-        ->setPrefix('/' . VERSION . '/posts')
+        ->setPrefix('/posts')
         ->setHandler('Phanbook\Controllers\PostsController')
         ->setLazy(true);
 
