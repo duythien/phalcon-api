@@ -19,7 +19,7 @@ use Phalcon\Mvc\Dispatcher;
 
 
 /**
- * The FactoryDefault Dependency Injector automatically 
+ * The FactoryDefault Dependency Injector automatically
  * register the right services providing a full stack framework
  */
 $di = new FactoryDefault();
@@ -44,11 +44,6 @@ $di->set(
     true
 );
 
-// $di->set('url', function(){
-//     $url = new \Phalcon\Mvc\Url();
-//     $url->setBaseUri('/');
-//     return $url;
-// });
 
 /**
  * This service controls the initialization of models, keeping record of relations
@@ -78,7 +73,6 @@ $di->set(
                 'username' => $di->get('config')->database->mysql->username,
                 'password' => $di->get('config')->database->mysql->password,
                 'dbname'   => $di->get('config')->database->mysql->dbname,
-                //'schema'   => $di->get('config')->database->mysql->schema,
                 'options'  => [
                     \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES ' . $di->get('config')->database->mysql->charset
                 ]
@@ -135,17 +129,6 @@ $di->set(
         return $cache;
     }
 );
-
-//Markdown renderer
-$di->set(
-    'markdown',
-    function () {
-        $parsedown = new ParsedownExtra();
-        return $parsedown;
-    },
-    true
-);
-
 
 //Phalcon Debugger
 if ($config->application->debug) {

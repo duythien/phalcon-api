@@ -22,5 +22,4 @@ class CsvResponse extends Response
     {
         $this->setContentType('application/csv', 'UTF-8')->sendHeaders();
     }
-
 }

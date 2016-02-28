@@ -20,6 +20,6 @@ class TestController extends ControllerBase
      */
     public function index()
     {
-       echo "This is method get";
+        echo "This is method get";
     }
 }

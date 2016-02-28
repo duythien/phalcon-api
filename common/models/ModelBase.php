@@ -6,8 +6,6 @@ use Phalcon\Mvc\Model\Resultset\Simple as Resultset;
 
 /**
  * Class ModelBase
- *
- * 
  */
 class ModelBase extends Model
 {

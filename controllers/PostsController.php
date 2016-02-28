@@ -6,7 +6,6 @@ use Phanbook\Models\Posts;
 
 /**
  * Class UserController
- *
  */
 class PostsController extends ControllerBase
 {
@@ -20,6 +19,6 @@ class PostsController extends ControllerBase
      */
     public function index()
     {
-       d('store phanbook');
+        d('store phanbook');
     }
 }

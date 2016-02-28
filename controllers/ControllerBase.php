@@ -18,31 +18,26 @@ class ControllerBase extends Controller
     /**
      * @constant string name of api with the 400 client error
      * @link http://www.restapitutorial.com/httpstatuscodes.html
-     *
      */
     const CODE_WRONG_ARGS       = 'GEN-FUBARGS';
 
     /**
      * @constant string name of api with the 404 client error
-     *
      */
     const CODE_NOT_FOUND        = 'GEN-LIKETHEWIND';
 
     /**
      * @constant string name of api with the 500 server error
-     *
      */
     const CODE_INTERNAL_ERROR   = 'GEN-AAAGGH';
 
     /**
      * @constant string name of api with the 401 client error
-     *
      */
     const CODE_UNAUTHORIZED     = 'GEN-MAYBGTFO';
 
     /**
      * @constant string name of api with the 403 client error
-     *
      */
     const CODE_FORBIDDEN        = 'GEN-GTFO';
 
@@ -106,8 +101,8 @@ class ControllerBase extends Controller
     }
     /**
      * [respondWithArray description]
-     * @param  array  $array   [description]
-     * @param  array  $headers [description]
+     * @param  array $array   [description]
+     * @param  array $headers [description]
      * @return [type]          [description]
      */
     protected function respondWithArray(array $array, array $headers = [])
@@ -134,19 +129,21 @@ class ControllerBase extends Controller
             );
         }
 
-        return $this->respondWithArray([
+        return $this->respondWithArray(
+            [
             'error' => [
                 'code' => $errorCode,
                 'http_code' => $this->statusCode,
                 'message' => $message,
             ]
-        ]);
+            ]
+        );
     }
 
     /**
      * Generates a Response with a 403 HTTP header and a given message.
      *
-     * @return  Response
+     * @return Response
      */
     public function errorForbidden($message = 'Forbidden')
     {
@@ -156,7 +153,7 @@ class ControllerBase extends Controller
     /**
      * Generates a Response with a 500 HTTP header and a given message.
      *
-     * @return  Response
+     * @return Response
      */
     public function errorInternalError($message = 'Internal Error')
     {
@@ -166,7 +163,7 @@ class ControllerBase extends Controller
     /**
      * Generates a Response with a 404 HTTP header and a given message.
      *
-     * @return  Response
+     * @return Response
      */
     public function errorNotFound($message = 'Resource Not Found')
     {
@@ -176,7 +173,7 @@ class ControllerBase extends Controller
     /**
      * Generates a Response with a 401 HTTP header and a given message.
      *
-     * @return  Response
+     * @return Response
      */
     public function errorUnauthorized($message = 'Unauthorized')
     {
@@ -186,7 +183,7 @@ class ControllerBase extends Controller
     /**
      * Generates a Response with a 400 HTTP header and a given message.
      *
-     * @return  Response
+     * @return Response
      */
     public function errorWrongArgs($message = 'Wrong Arguments')
     {
