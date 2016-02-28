@@ -13,10 +13,10 @@ return call_user_func(
         $collections = array();
         $collectionFiles = scandir(ROOT_DIR . 'collections');
 
-        foreach($collectionFiles as $collectionFile){
+        foreach ($collectionFiles as $collectionFile) {
             $pathinfo = pathinfo($collectionFile);
 
-            if($pathinfo['extension'] === 'php') {
+            if ($pathinfo['extension'] === 'php') {
                 // The collection files return their collection objects, so mount
                 // them directly into the router.
                 $collections[] = include ROOT_DIR . 'collections/' . $collectionFile;

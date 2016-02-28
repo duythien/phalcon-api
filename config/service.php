@@ -16,8 +16,6 @@ use Phalcon\Session\Adapter\Files as SessionAdapter;
 use Phalcon\Events\Manager as EventsManager;
 use Phalcon\Mvc\Dispatcher;
 
-
-
 /**
  * The FactoryDefault Dependency Injector automatically
  * register the right services providing a full stack framework

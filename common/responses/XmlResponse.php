@@ -22,5 +22,4 @@ class XmlResponse extends Response
     {
         $this->setContentType('application/xml', 'UTF-8')->sendHeaders();
     }
-
 }

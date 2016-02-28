@@ -2,7 +2,6 @@
 
 namespace Phanbook\Controllers;
 
-
 /**
  * Class UserController
  *

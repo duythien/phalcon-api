@@ -22,5 +22,4 @@ class JsonResponse extends Response
     {
         $this->setContentType('application/json', 'UTF-8')->sendHeaders();
     }
-
 }
