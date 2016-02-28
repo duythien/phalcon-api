@@ -6,5 +6,10 @@
     "require-dev": {
         "behat/behat": "~3.0.4",
         "squizlabs/php_codesniffer": "1.*"
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Phanbook\\Tests\\Behat\\Features": "tests/behat/features"
+        }
     }
 }
