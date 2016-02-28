@@ -8,27 +8,23 @@
  */
 return call_user_func(
     function () {
-        $testCollection = new \Phalcon\Mvc\Micro\Collection();
+        $collection = new \Phalcon\Mvc\Micro\Collection();
 
-        $testCollection
+        $collection
             ->setPrefix('/posts')
             ->setHandler('Phanbook\Controllers\PostsController')
             ->setLazy(true);
-
-        // First paramter is the route, which with the collection prefix here would be GET /example/
-        // Second paramter is the function name of the Controller.
-        $testCollection->get('/', 'index');
-        // This is exactly the same execution as GET, but the Response has no body.
-        $testCollection->head('/', 'index');
+        $collection->get('/', 'index');
+        $collection->head('/', 'index');
 
         // $id will be passed as a parameter to the Controller's specified function
-        $testCollection->get('/{id:[0-9]+}', 'getOne');
-        $testCollection->head('/{id:[0-9]+}', 'getOne');
-        $testCollection->post('/', 'post');
-        $testCollection->delete('/{id:[0-9]+}', 'delete');
-        $testCollection->put('/{id:[0-9]+}', 'put');
-        $testCollection->patch('/{id:[0-9]+}', 'patch');
+        $collection->get('/{id:[0-9]+}', 'getOne');
+        $collection->head('/{id:[0-9]+}', 'getOne');
+        $collection->post('/', 'post');
+        $collection->delete('/{id:[0-9]+}', 'delete');
+        $collection->put('/{id:[0-9]+}', 'put');
+        $collection->patch('/{id:[0-9]+}', 'patch');
 
-        return $testCollection;
+        return $collection;
     }
 );
