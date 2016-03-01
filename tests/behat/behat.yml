@@ -3,10 +3,10 @@
 default:
     suites:
         domain_features:
-            paths:    [ %paths.base%/features ]
+            paths:    [ %paths.base%/features/domain ]
             contexts: [ DomainContext ]
         web_features:
-            paths:    [ %paths.base%/features ]
+            paths:    [ %paths.base%/features/web ]
             contexts: [ WebContext ]
             filters:
                 tags: @web

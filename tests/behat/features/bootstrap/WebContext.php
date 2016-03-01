@@ -1,5 +1,6 @@
 <?php
 
+use Behat\Behat\Tester\Exception\PendingException;
 use Behat\Behat\Context\Context;
 use Behat\Behat\Context\SnippetAcceptingContext;
 use Behat\Gherkin\Node\PyStringNode;
@@ -19,5 +20,29 @@ class WebContext implements Context, SnippetAcceptingContext
      */
     public function __construct()
     {
+    }
+
+    /**
+     * @Given I am logged in as a user with the :arg1 role
+     */
+    public function iAmLoggedInAsAUserWithTheRole($arg1)
+    {
+        throw new PendingException();
+    }
+
+    /**
+     * @When I click :arg1
+     */
+    public function iClick($arg1)
+    {
+        throw new PendingException();
+    }
+
+    /**
+     * @Then I should see :arg1
+     */
+    public function iShouldSee($arg1)
+    {
+        throw new PendingException();
     }
 }
