@@ -24,6 +24,7 @@ return call_user_func(
         $collection->delete('/{id:[0-9]+}', 'delete');
         $collection->put('/{id:[0-9]+}', 'put');
         $collection->patch('/{id:[0-9]+}', 'patch');
+        $collection->get('/mysql', 'mysql');
 
         return $collection;
     }
