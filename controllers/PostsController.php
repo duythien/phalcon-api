@@ -49,4 +49,13 @@ class PostsController extends ControllerBase
         $this->db->commit();
     }
 
+    public function resource()
+    {
+        if (!$this->oauth->verifyResourceRequest(\OAuth2\Request::createFromGlobals())) {
+            $this->errorUnauthorized();
+            die;
+        }
+        echo json_encode(array('success' => true, 'message' => 'You accessed my APIs!'));
+    }
+
 }

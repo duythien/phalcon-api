@@ -11,7 +11,7 @@ return call_user_func(
         $testCollection = new \Phalcon\Mvc\Micro\Collection();
 
         $testCollection
-            ->setPrefix('/test')
+            ->setPrefix('/test/')
             ->setHandler('Phanbook\Controllers\TestController')
             ->setLazy(true);
 
@@ -26,8 +26,15 @@ return call_user_func(
         $testCollection->head('/{id:[0-9]+}', 'getOne');
         $testCollection->post('/', 'post');
         $testCollection->delete('/{id:[0-9]+}', 'delete');
-        $testCollection->put('/{id:[0-9]+}', 'put');
-        $testCollection->patch('/{id:[0-9]+}', 'patch');
+        $testCollection->put('{id:[0-9]+}', 'put');
+        $testCollection->patch('{id:[0-9]+}', 'patch');
+
+
+        //
+        $testCollection->post('token', 'token');
+
+        $testCollection->get('get/token', 'getToken');
+        $testCollection->map('authorize', 'authorize');
 
         return $testCollection;
     }

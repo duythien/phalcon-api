@@ -15,7 +15,7 @@ return call_user_func(
             ->setHandler('Phanbook\Controllers\PostsController')
             ->setLazy(true);
         $collection->get('/', 'index');
-        $collection->head('/', 'index');
+        //$collection->head('/', 'index');
 
         // $id will be passed as a parameter to the Controller's specified function
         $collection->get('/{id:[0-9]+}', 'getOne');
@@ -25,7 +25,7 @@ return call_user_func(
         $collection->put('/{id:[0-9]+}', 'put');
         $collection->patch('/{id:[0-9]+}', 'patch');
         $collection->get('/mysql', 'mysql');
-
+        $collection->get('/resource', 'resource');
         return $collection;
     }
 );

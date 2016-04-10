@@ -3,6 +3,7 @@ use Phalcon\Mvc\Micro;
 use Phalcon\Mvc\Micro\Collection;
 
 define('DS', DIRECTORY_SEPARATOR);
+define('VERSION', 'v1');
 define('ROOT_DIR', dirname(__FILE__) . DS);
 define('APPLICATION_ENV', (getenv('APPLICATION_ENV') ? getenv('APPLICATION_ENV') : 'local'));
 
@@ -18,20 +19,14 @@ try {
 	$app = new Micro($di);
 	$app->setDI($di);
 
+    //Before executing the handler. It can be used to control the access to the application
 	$app->before(function() use ($app, $di) {
 
 	});
 	foreach($di->get('collections') as $collection){
 		$app->mount($collection);
 	}
-    /**
-     * After a route is run, usually when its Controller returns a final value,
-     * the application runs the following function which actually sends the response to the client.
-     *
-     * The default behavior is to send the Controller's returned value to the client as JSON.
-     * However, by parsing the request querystring's 'type' paramter, it is easy to install
-     * different response type handlers.  Below is an alternate csv handler.
-     */
+    //Executed after the handler is executed. It can be used to prepare the response
     $app->after(function() use ($app) {
         $type = $app->request->get('type');
         switch ($type) {
@@ -46,6 +41,16 @@ try {
                 $response = new JsonResponse;
                 break;
         }
+    });
+
+    //Executed after sending the response. It can be used to perform clean-up
+    $app->finish(function () use ($app) {
+
+    });
+    //When a user tries to access a route that is not defined
+    $app->notFound(function () use ($app) {
+        $app->response->setStatusCode(404, "Not Found")->sendHeaders();
+        echo 'This is crazy, but this page was not found!';
     });
 	$app->handle();
 } catch (Exception $e) {

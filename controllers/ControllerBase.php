@@ -7,6 +7,8 @@ use Phalcon\Mvc\Controller;
 use League\Fractal\Resource\Collection;
 use League\Fractal\Resource\Item;
 use League\Fractal\Manager;
+use Phanbook\Responses\JsonResponse;
+
 
 /**
  * Class ControllerBase
@@ -107,9 +109,9 @@ class ControllerBase extends Controller
      */
     protected function respondWithArray(array $array, array $headers = [])
     {
-        $response = Response::json($array, $this->statusCode, $headers);
+        $response = JsonResponse::json($array, $this->statusCode, $headers);
 
-        // $response->header('Content-Type', 'application/json');
+        $this->response->setContentType('application/json', 'UTF-8')->sendHeaders();
 
         return $response;
     }

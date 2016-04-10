@@ -18,7 +18,8 @@ $loader->registerNamespaces(
     [
         'Phanbook\Controllers'  => ROOT_DIR . 'controllers/',
         'Phanbook\Models'       => ROOT_DIR . 'common/models/',
-        'Phanbook\Responses'    => ROOT_DIR . 'common/responses'
+        'Phanbook\Responses'    => ROOT_DIR . 'common/responses',
+        'Phanbook\Auth'         => ROOT_DIR . 'common/auth'
     ]
 );
 $loader->register();

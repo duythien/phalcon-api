@@ -15,6 +15,7 @@ use Phalcon\Mvc\Model\Manager as ModelsManager;
 use Phalcon\Session\Adapter\Files as SessionAdapter;
 use Phalcon\Events\Manager as EventsManager;
 use Phalcon\Mvc\Dispatcher;
+use Phanbook\Auth\OAuth;
 
 /**
  * The FactoryDefault Dependency Injector automatically
@@ -126,6 +127,36 @@ $di->set(
 
         return $cache;
     }
+);
+
+//Oauth
+$di->set(
+    'oauth',
+    function () {
+        $oauth = new OAuth();
+        return $oauth->bootstrap();
+
+        $dsn      = 'mysql:dbname=store;host=localhost';
+        $username = 'root';
+        $password = 'phanbook';
+        $storage = new \OAuth2\Storage\Pdo(
+            array(
+                'dsn' => $dsn,
+                'username' => $username,
+                'password' => $password
+            )
+        );
+        // Pass a storage object or array of storage objects to the OAuth2 server class
+        $server = new \OAuth2\Server($storage);
+
+        // Add the "Client Credentials" grant type (it is the simplest of the grant types)
+        $server->addGrantType(new \OAuth2\GrantType\ClientCredentials($storage));
+
+        // Add the "Authorization Code" grant type (this is where the oauth magic happens)
+        $server->addGrantType(new \OAuth2\GrantType\AuthorizationCode($storage));
+        return $server;
+    },
+    true
 );
 
 //Phalcon Debugger

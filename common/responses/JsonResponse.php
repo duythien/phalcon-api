@@ -20,6 +20,10 @@ class JsonResponse extends Response
      */
     public function setUp()
     {
-        $this->setContentType('application/json', 'UTF-8')->sendHeaders();
+        return $this->setContentType('application/json', 'UTF-8')->sendHeaders();
+    }
+    public static function json($data = [], $status = 200, $headers = [], $options = 0)
+    {
+        echo json_encode($data);
     }
 }
