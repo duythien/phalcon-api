@@ -134,27 +134,8 @@ $di->set(
     'oauth',
     function () {
         $oauth = new OAuth();
-        return $oauth->bootstrap();
+        return $oauth;
 
-        $dsn      = 'mysql:dbname=store;host=localhost';
-        $username = 'root';
-        $password = 'phanbook';
-        $storage = new \OAuth2\Storage\Pdo(
-            array(
-                'dsn' => $dsn,
-                'username' => $username,
-                'password' => $password
-            )
-        );
-        // Pass a storage object or array of storage objects to the OAuth2 server class
-        $server = new \OAuth2\Server($storage);
-
-        // Add the "Client Credentials" grant type (it is the simplest of the grant types)
-        $server->addGrantType(new \OAuth2\GrantType\ClientCredentials($storage));
-
-        // Add the "Authorization Code" grant type (this is where the oauth magic happens)
-        $server->addGrantType(new \OAuth2\GrantType\AuthorizationCode($storage));
-        return $server;
     },
     true
 );
@@ -162,11 +143,5 @@ $di->set(
 //Phalcon Debugger
 if ($config->application->debug) {
     (new \Phalcon\Debug)->listen();
-    if (!function_exists('d')) {
-        function d($object, $kill = true)
-        {
-            echo '<pre style="text-aling:left">', print_r($object, true), '</pre>';
-            $kill && exit(1);
-        }
-    }
+    include ROOT_DIR . 'common/tools/Debug.php';
 }

@@ -1,19 +1,21 @@
 <?php
 
-namespace Phanbook\Controllers;
+namespace App\Controllers;
 
 use Phalcon\Mvc\Controller;
-
+use Phalcon\Paginator\Adapter\QueryBuilder as PaginatorQueryBuilder;
 use League\Fractal\Resource\Collection;
 use League\Fractal\Resource\Item;
-use League\Fractal\Manager;
-use Phanbook\Responses\JsonResponse;
+use League\Fractal\Pagination\Cursor;
+use FoxOMS\Responses\JsonResponse;
+use FoxOMS\Models\Api\ModelBase;
+use League\Fractal\Pagination\PhalconFrameworkPaginatorAdapter;
 
 
 /**
  * Class ControllerBase
  *
- * @package Phanbook\Frontend\Controllers
+ * @package App\Controllers
  */
 class ControllerBase extends Controller
 {
@@ -49,6 +51,8 @@ class ControllerBase extends Controller
      */
     protected $statusCode = 200;
 
+    protected $perPage = 10;
+
     /**
      * Getter for statusCode
      *
@@ -72,13 +76,7 @@ class ControllerBase extends Controller
         return $this;
     }
 
-    /**
-     * [respondWithItem description]
-     *
-     * @param  [type] $item     [description]
-     * @param  [type] $callback [description]
-     * @return [type]           [description]
-     */
+
     protected function respondWithItem($item, $callback)
     {
         $resource = new Item($item, $callback);
@@ -87,41 +85,64 @@ class ControllerBase extends Controller
 
         return $this->respondWithArray($rootScope->toArray());
     }
+
     /**
-     * [respondWithCollection description]
-     * @param  [type] $collection [description]
-     * @param  [type] $callback   [description]
-     * @return [type]             [description]
+     * @param $collection
+     * @param $callback
+     * @return JsonResponse
      */
     protected function respondWithCollection($collection, $callback)
     {
         $resource = new Collection($collection, $callback);
-
         $rootScope = $this->fractal->createData($resource);
 
         return $this->respondWithArray($rootScope->toArray());
     }
     /**
-     * [respondWithArray description]
-     * @param  array $array   [description]
-     * @param  array $headers [description]
-     * @return [type]          [description]
+     * @param $collection
+     * @param $callback
+     * @return JsonResponse
      */
+    protected function respondWithPagination($pagination, $callback)
+    {
+        $resource = new Collection($pagination->getPaginate()->items, $callback);
+        $resource->setPaginator(new PhalconFrameworkPaginatorAdapter($pagination));
+
+        $rootScope = $this->fractal->createData($resource);
+
+        return $this->respondWithArray($rootScope->toArray());
+    }
+
+    /**
+     * @param $paginator
+     * @param $callback
+     * @return JsonResponse
+     */
+    protected function respondWithCursor($paginator, $callback)
+    {
+        $pagination = $paginator->getPaginate();
+        $resource = new Collection($pagination->items, $callback);
+        $cursor = new Cursor(
+            $pagination->current,
+            $pagination->before,
+            $pagination->next,
+            $pagination->total_items
+        );
+        $resource->setCursor($cursor);
+        $rootScope = $this->fractal->createData($resource);
+
+        return $this->respondWithArray($rootScope->toArray());
+    }
+
     protected function respondWithArray(array $array, array $headers = [])
     {
-        $response = JsonResponse::json($array, $this->statusCode, $headers);
-
-        $this->response->setContentType('application/json', 'UTF-8')->sendHeaders();
+        $response = new JsonResponse();
+        $response->json($array);
 
         return $response;
     }
 
-    /**
-     * [respondWithError description]
-     * @param  [type] $message   [description]
-     * @param  [type] $errorCode [description]
-     * @return [type]            [description]
-     */
+
     protected function respondWithError($message, $errorCode)
     {
         if ($this->statusCode === 200) {
@@ -190,5 +211,44 @@ class ControllerBase extends Controller
     public function errorWrongArgs($message = 'Wrong Arguments')
     {
         return $this->setStatusCode(400)->respondWithError($message, self::CODE_WRONG_ARGS);
+    }
+
+    /**
+     * @param $query
+     * @return PaginatorQueryBuilder
+     */
+    public function pagination($query)
+    {
+
+        $builder  = ModelBase::modelQuery($query);
+        $page     = $this->request->getQuery('page') ?  : 1;
+        $perPage  = $this->request->getQuery('limit') ? : $this->perPage;
+
+        $paginator  = new PaginatorQueryBuilder(
+            [
+                'builder'   => $builder,
+                'limit'     => $perPage,
+                'page'      => $page
+            ]
+        );
+        return $paginator;
+    }
+
+    /**
+     * @return array
+     */
+    public function getParameter()
+    {
+        $query  = $this->request->getQuery();
+        $query  = array_filter($query, function($val){
+            return !empty($val);
+        });
+        //define the fields required for a partial response.
+        if (isset($query['fields'])) {
+            $fields = explode(',', $query['fields']);
+            $query['fields'] = $fields;
+        }
+
+        return $query;
     }
 }

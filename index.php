@@ -3,12 +3,11 @@ use Phalcon\Mvc\Micro;
 use Phalcon\Mvc\Micro\Collection;
 
 define('DS', DIRECTORY_SEPARATOR);
-define('VERSION', 'v1');
 define('ROOT_DIR', dirname(__FILE__) . DS);
 define('APPLICATION_ENV', (getenv('APPLICATION_ENV') ? getenv('APPLICATION_ENV') : 'local'));
 
-use Phanbook\Responses\XmlResponse;
-use Phanbook\Responses\JsonResponse;
+use App\Responses\XmlResponse;
+use App\Responses\JsonResponse;
 
 try {
 

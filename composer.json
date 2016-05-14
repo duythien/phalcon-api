@@ -1,7 +1,7 @@
 {
     "require": {
-        "monolog/monolog": "1.0.*",
-        "bshaffer/oauth2-server-php": "~1.8"
+        "bshaffer/oauth2-server-php": "~1.8",
+        "league/fractal": "^0.13.0"
     },
     "require-dev": {
         "behat/behat": "~3.0.4",

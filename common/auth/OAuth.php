@@ -1,5 +1,5 @@
 <?php
-namespace Phanbook\Auth;
+namespace App\Auth;
 
 use Phalcon\Mvc\User\Component;
 
@@ -8,20 +8,21 @@ use Phalcon\Mvc\User\Component;
  */
 class OAuth extends Component
 {
+    /**
+     *
+     * @var object
+     */
+    public $server;
 
-
-    public function bootstrap()
+    public function __construct()
     {
-        $dsn      = 'mysql:dbname=store;host=localhost';
-        $username = 'root';
-        $password = 'phanbook';
-        $storage = new \OAuth2\Storage\Pdo(
-            array(
-                'dsn' => $dsn,
-                'username' => $username,
-                'password' => $password
-            )
-        );
+        $this->server = $this->bootstrap();
+
+    }
+    protected function bootstrap()
+    {
+        $db = $this->db;
+        $storage = new \OAuth2\Storage\Pdo($db->getInternalHandler());
         // Pass a storage object or array of storage objects to the OAuth2 server class
         $server = new \OAuth2\Server($storage);
 

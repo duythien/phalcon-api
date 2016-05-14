@@ -1,5 +1,5 @@
 <?php
-namespace Phanbook\Responses;
+namespace App\Responses;
 
 use Phalcon\Http\Response;
 
@@ -22,8 +22,14 @@ class JsonResponse extends Response
     {
         return $this->setContentType('application/json', 'UTF-8')->sendHeaders();
     }
-    public static function json($data = [], $status = 200, $headers = [], $options = 0)
+
+    /**
+     * @param array $data
+     *
+     */
+    public  function json($data = [])
     {
+
         echo json_encode($data);
     }
 }

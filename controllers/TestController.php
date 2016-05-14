@@ -1,6 +1,6 @@
 <?php
 
-namespace Phanbook\Controllers;
+namespace App\Controllers;
 
 /**
  * Class UserController
@@ -23,7 +23,7 @@ class TestController extends ControllerBase
     }
     public function token()
     {
-        $this->oauth->handleTokenRequest(\OAuth2\Request::createFromGlobals())->send();
+        $this->oauth->server->handleTokenRequest(\OAuth2\Request::createFromGlobals())->send();
     }
     public function getToken()
     {
