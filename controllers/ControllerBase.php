@@ -3,15 +3,17 @@
 namespace App\Controllers;
 
 use Phalcon\Mvc\Controller;
+use Phalcon\Mvc\Dispatcher;
 use Phalcon\Paginator\Adapter\QueryBuilder as PaginatorQueryBuilder;
 use League\Fractal\Resource\Collection;
 use League\Fractal\Resource\Item;
 use League\Fractal\Pagination\Cursor;
-use FoxOMS\Responses\JsonResponse;
-use FoxOMS\Models\Api\ModelBase;
+use App\Responses\JsonResponse;
+use App\Models\Api\ModelBase;
 use League\Fractal\Pagination\PhalconFrameworkPaginatorAdapter;
+use App\Auth\Request as OAuth2Request;
 
-
+use App\Models\User;
 /**
  * Class ControllerBase
  *
@@ -45,13 +47,26 @@ class ControllerBase extends Controller
      */
     const CODE_FORBIDDEN        = 'GEN-GTFO';
 
+    const CODE_WRONG_DATA       = 'GEN-DATA';
+
     /**
      *
      * @var integer
      */
     protected $statusCode = 200;
 
+    /**
+     * @var int
+     */
     protected $perPage = 10;
+
+
+    protected $userId = null;
+
+    /**
+     * @var string
+     */
+    protected $userDateFormat = 'd/m/Y';
 
     /**
      * Getter for statusCode
@@ -76,7 +91,11 @@ class ControllerBase extends Controller
         return $this;
     }
 
-
+    /**
+     * @param $item
+     * @param $callback
+     * @return JsonResponse
+     */
     protected function respondWithItem($item, $callback)
     {
         $resource = new Item($item, $callback);
@@ -133,7 +152,12 @@ class ControllerBase extends Controller
 
         return $this->respondWithArray($rootScope->toArray());
     }
-
+    /**
+     * [respondWithArray description]
+     * @param  array $array   [description]
+     * @param  array $headers [description]
+     * @return [type]          [description]
+     */
     protected function respondWithArray(array $array, array $headers = [])
     {
         $response = new JsonResponse();
@@ -143,6 +167,11 @@ class ControllerBase extends Controller
     }
 
 
+    /**
+     * @param $message
+     * @param $errorCode
+     * @return JsonResponse
+     */
     protected function respondWithError($message, $errorCode)
     {
         if ($this->statusCode === 200) {
@@ -159,6 +188,16 @@ class ControllerBase extends Controller
                 'http_code' => $this->statusCode,
                 'message' => $message,
             ]
+            ]
+        );
+    }
+    public function respondWithSuccess($message = 'ok')
+    {
+        return $this->respondWithArray(
+            [
+                'sucess' => [
+                    'message' => $message,
+                ]
             ]
         );
     }
@@ -212,7 +251,15 @@ class ControllerBase extends Controller
     {
         return $this->setStatusCode(400)->respondWithError($message, self::CODE_WRONG_ARGS);
     }
-
+    /**
+     * Generates a Response with a 400 HTTP header and a given message.
+     *
+     * @return Response
+     */
+    public function errorWrongData($message = 'Wrong Data')
+    {
+        return $this->setStatusCode(409)->respondWithError($message, self::CODE_WRONG_DATA);
+    }
     /**
      * @param $query
      * @return PaginatorQueryBuilder
@@ -235,6 +282,18 @@ class ControllerBase extends Controller
     }
 
     /**
+     * @param $query
+     * @return mixed
+     */
+    public function getOne($query)
+    {
+        $builder  = ModelBase::modelQuery($query);
+        return $builder
+            ->getQuery()
+            ->setUniqueRow(true)
+            ->execute();
+    }
+    /**
      * @return array
      */
     public function getParameter()
@@ -251,4 +310,64 @@ class ControllerBase extends Controller
 
         return $query;
     }
+
+    /**
+     * @return array
+     */
+    public function parserDataRequest()
+    {
+        $posts = $this->request->getJsonRawBody(true);
+
+        if (0 == count($posts)) {
+            if ($this->request->isPut()) {
+                //@todo paser data;
+                $posts = $this->request->getPut();
+            }
+            if ($this->request->isPost()) {
+                $posts = $this->request->getPost();
+            }
+        }
+        return $posts;
+    }
+    /**
+     * Adding default some value
+     */
+    // public function initialize()
+    // {
+    //     if ($this->di->has('user')) {
+    //         $serviceUser = $this->di->get('user');
+    //         //$this->tenantId = $serviceUser->usr_tnt_id;
+    //         //$this->userId   = $serviceUser->usr_id;
+    //     }
+
+    // }
+    // public function beforeExecuteRoute(Dispatcher $dispatcher)
+    // {
+    //     $server = $this->oauth->server;
+    //     $action = $dispatcher->getActionName();
+    //     $module = $dispatcher->getActiveController()->getModuleName();
+    //     $resourceName = $module . '-' . $dispatcher->getControllerName();
+    //     $request = OAuth2Request::createFromGlobals();
+    //     //Skip if is a controller name token;
+    //     if ($resourceName == 'token-token') {
+    //         exit;
+    //     }
+    //     if (!$server->verifyResourceRequest($request)) {
+    //         $server->getResponse()->send();
+    //         exit;
+    //     }
+
+    //     $token  = $server->getAccessTokenData($request);
+    //     $userId = $token['user_id'];
+    //     $user   = User::getUserById($userId);
+    //     //Register user object to use check tenant
+    //     if (is_object($user)) {
+    //         $this->di->set('user', $user, true);
+    //     }
+
+    //     //Attack event ACL at here
+    //     if (!$this->acl->checkAcl($user['grp_name'], $resourceName, $action)) {
+    //         return $this->errorUnauthorized();
+    //     }
+    // }
 }

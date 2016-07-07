@@ -7,7 +7,7 @@ namespace App\Controllers;
  *
  * @package Zphalcon\Api\Controllers
  */
-class TestController extends ControllerBase
+class TestsController extends ControllerBase
 {
 
 
@@ -17,7 +17,7 @@ class TestController extends ControllerBase
      * @access public
      * @return void
      */
-    public function index()
+    public function indexAction()
     {
         echo "This is method get";
     }

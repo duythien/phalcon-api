@@ -1,27 +1,40 @@
 <?php
 
-/**
- * routeLoader loads a set of Phalcon Mvc\Micro\Collections from
- * the collections directory.
- *
- * php files in the collections directory must return Collection objects only.
- */
-return call_user_func(
-    function () {
+use Phalcon\Mvc\Router\Group;
+use Phalcon\Mvc\Router;
 
-        $collections         = array();
-        $collectionFiles     = scandir(ROOT_DIR . 'collections');
-        $controllerNamespace = '\App\\Controllers\\';
-        $router = new \Phalcon\Mvc\Micro\Collection();
+$router = new Router(false);
+$router->setDefaults([
+    'controller' => 'tests',
+    'action'     => 'index'
+]);
+$router->removeExtraSlashes(true);
+$prefix = '/' . VERSION . '/';
+//tests
+$tests = new Group(['controller' => 'tests']);
+$tests->setPrefix($prefix . 'tests');
+$tests->addGet('', ['action' => 'index']);
+$tests->addGet('/{id:[0-9]+}', ['action' => 'view']);
+$tests->addPost('/new', ['action' => 'new']);
+$tests->addPut('/{id:[0-9]+}', ['action' => 'update']);
 
-        foreach ($collectionFiles as $collectionFile) {
-            $pathinfo = pathinfo($collectionFile);
-            if ($pathinfo['extension'] === 'php') {
-                // The collection files return their collection objects, so mount
-                // them directly into the router.
-                $collections[] = include ROOT_DIR . 'collections/' . $collectionFile;
-            }
-        }
-        return $collections;
-    }
-);
+
+//task
+$tasks = new Group(['controller' => 'task']);
+$tasks->setPrefix($prefix . 'tasks');
+$tasks->addGet('', ['action' => 'index']);
+$tasks->addGet('/{id:[0-9]+}', ['action' => 'view']);
+$tasks->addPost('/new', ['action' => 'new']);
+$tasks->addPut('/{id:[0-9]+}', ['action' => 'update']);
+
+//token
+$token = new Group(['controller' => 'token']);
+$token->setPrefix($prefix . 'token');
+$token->add('',['action' => 'index']);
+
+//mount
+$router->mount($token);
+$router->mount($tests);
+$router->mount($tasks);
+
+return $router;

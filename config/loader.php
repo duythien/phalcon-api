@@ -17,9 +17,9 @@ $loader = new Phalcon\Loader();
 $loader->registerNamespaces(
     [
         'App\Controllers'  => ROOT_DIR . 'controllers/',
-        'App\Models'       => ROOT_DIR . 'common/models/',
-        'App\Responses'    => ROOT_DIR . 'common/responses',
-        'App\Auth'         => ROOT_DIR . 'common/auth'
+        'App\Models'       => ROOT_DIR . 'core/models/',
+        'App\Responses'    => ROOT_DIR . 'core/responses',
+        'App\Auth'         => ROOT_DIR . 'core/auth'
     ]
 );
 $loader->register();

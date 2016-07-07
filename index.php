@@ -1,58 +1,36 @@
 <?php
-use Phalcon\Mvc\Micro;
-use Phalcon\Mvc\Micro\Collection;
+use Phalcon\Mvc\Application;
 
 define('DS', DIRECTORY_SEPARATOR);
 define('ROOT_DIR', dirname(__FILE__) . DS);
 define('APPLICATION_ENV', (getenv('APPLICATION_ENV') ? getenv('APPLICATION_ENV') : 'local'));
 
-use App\Responses\XmlResponse;
-use App\Responses\JsonResponse;
 
 try {
 
-	require  ROOT_DIR . 'config/loader.php';
-	require  ROOT_DIR . 'config/service.php';
-	require  ROOT_DIR . 'vendor/autoload.php';
+    require  ROOT_DIR . 'config/loader.php';
+    require  ROOT_DIR . 'config/service.php';
+    require  ROOT_DIR . 'vendor/autoload.php';
 
-	$app = new Micro($di);
-	$app->setDI($di);
+    $router = $di->getRouter();
+    $router->handle();
 
-    //Before executing the handler. It can be used to control the access to the application
-	$app->before(function() use ($app, $di) {
+    // Pass the processed router parameters to the dispatcher
+    $dispatcher = $di->getDispatcher();
+    $dispatcher->setControllerName($router->getControllerName());
+    $dispatcher->setActionName($router->getActionName());
+    $dispatcher->setParams($router->getParams());
+    $dispatcher->dispatch();
 
-	});
-	foreach($di->get('collections') as $collection){
-		$app->mount($collection);
-	}
-    //Executed after the handler is executed. It can be used to prepare the response
-    $app->after(function() use ($app) {
-        $type = $app->request->get('type');
-        switch ($type) {
-            case 'xml':
-                $response = new XmlResponse;
-                //@response->setSomthing()
-                break;
-            case 'csv':
-                # code...
-                break;
-            default:
-                $response = new JsonResponse;
-                break;
-        }
-    });
-
-    //Executed after sending the response. It can be used to perform clean-up
-    $app->finish(function () use ($app) {
-
-    });
-    //When a user tries to access a route that is not defined
-    $app->notFound(function () use ($app) {
-        $app->response->setStatusCode(404, "Not Found")->sendHeaders();
-        echo 'This is crazy, but this page was not found!';
-    });
-	$app->handle();
+    // Get the returned value by the last executed action
+    $response = $dispatcher->getReturnedValue();
+    // Check if the action returned is a 'response' object
+    if ($response instanceof Phalcon\Http\ResponseInterface) {
+        // Send the response
+        $response->send();
+    }
 } catch (Exception $e) {
-	echo $e->getMessage();
+    echo $e->getMessage();
     d($e->getTraceAsString());
 }
+

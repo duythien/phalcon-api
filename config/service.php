@@ -15,7 +15,7 @@ use Phalcon\Mvc\Model\Manager as ModelsManager;
 use Phalcon\Session\Adapter\Files as SessionAdapter;
 use Phalcon\Events\Manager as EventsManager;
 use Phalcon\Mvc\Dispatcher;
-use Phanbook\Auth\OAuth;
+use App\Auth\OAuth;
 
 /**
  * The FactoryDefault Dependency Injector automatically
@@ -36,13 +36,25 @@ $di->set('config', $config, true);
  * Router
  */
 $di->set(
-    'collections',
+    'router',
     function () {
         return include __DIR__ . '/routes.php';
     },
     true
 );
 
+$di->set(
+    'dispatcher',
+    function () use ($di) {
+        $eventsManager = new EventsManager;
+        //$eventsManager->attach('dispatch', new Acl());
+        //$eventsManager->attach('dispatch:beforeException', new NotFoundPlugin);
+        $dispatcher = new Dispatcher;
+        $dispatcher->setEventsManager($eventsManager);
+        $dispatcher->setDefaultNamespace('App\\Controllers');
+        return $dispatcher;
+    }
+);
 
 /**
  * This service controls the initialization of models, keeping record of relations
