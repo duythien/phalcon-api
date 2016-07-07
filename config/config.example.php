@@ -24,30 +24,26 @@ define('VERSION', 'v1');
 return new \Phalcon\Config(
     [
         /**
-         * The name of the database, username,password for Phanbook
+         * The name of the database
          */
         'database'  => [
             'mysql'     => [
                 'host'     => 'localhost',
                 'username' => 'root',
-                'password' => 'phanbook',
-                'dbname'   => 'store',
+                'password' => '',
+                'dbname'   => 'app',
                 'charset'  => 'utf8',
             ]
         ],
         /**
          * Application settings
          */
-        'application' => [
-            /**
-             * The site name, you should change it to your name website
-             */
-            'name'                => 'Phanbook',
-            /**
-             * In a few words, explain what this site is about.
-             */
-            'tagline'             => 'A Q&A, Discussion PHP platform',
-            'publicUrl'           => 'http://phanbook.com',
+        'app' => [
+            //The site name, you should change it to your name website
+            'name'  => 'Phanbook',
+
+            //In a few words, explain what this site is about.
+            'publicUrl' => 'http://phanbook.com',
             /**
              * Change URL cdn if you want it
              */
@@ -64,7 +60,7 @@ return new \Phalcon\Config(
              * It is strongly recommended that plugin and theme developers use
              * in their development environments.
              */
-            'debug'               => true
+            'debug' => true
         ],
 
         /**
@@ -84,54 +80,10 @@ return new \Phalcon\Config(
             ]
         ],
         /**
-         * Your client ID and client secret keys come from
-         *
-         * @link https://github.com/settings/applications/new
-         */
-        'github'      => [
-            'clientId'     => '7c3724d3a593eff3ebef',
-            'clientSecret' => '0dede75fd2351242e51c69b4aa50ce130862ef05',
-            'redirectUri'  => 'http://dev.phanbook.com/auth/github/access_token',
-            'scopes'       => ['user', 'email']
-        ],
-
-        /**
-         * Your client ID and client secret keys come from
-         *
-         * @link https://developers.facebook.com/
-         */
-        'facebook' => [
-            'clientId' => '375822529287502',
-            'clientSecret' => 'b1f658bee406b846cd82f9cec3558662',
-            'redirectUri'  =>'http://dev.phanbook.com/auth/facebook/access_token'
-        ],
-        /**
-         * Your client ID and client secret keys come from
-         *
-         * @link https://developers.google.com/console/help/new/
-         */
-        'google' => [
-            'clientId'          => '432349956614-nn8d7cj0dnqot52u01f3q5flij7c3jsl.apps.googleusercontent.com',
-            'clientSecret'      => 'iupVGUyOZZJWTffeFkjxOmRr',
-            'redirectUri'       => 'http://dev.phanbook.com/auth/google/access_token'
-        ],
-        /**
          * Set languages you want to it, you can see example
          *
          * @link http://github.com/phanbook/docs/lanuage.md
          */
-        'language' => 'en_EN',
-        /**
-         * Set theme you want to use, for example 'discourse'
-         *
-         * @link http://github.com/phanbook/docs/theme.md
-         */
-        'theme'    => 'default',
-        /**
-         * The parameter you get form
-         *
-         * @link http://www.google.com/analytics/
-         */
-        'googleAnalytic' => 'UA-47328645-4'
+        'language' => 'en_EN'
     ]
 );

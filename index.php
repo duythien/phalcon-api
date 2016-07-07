@@ -3,8 +3,6 @@ use Phalcon\Mvc\Application;
 
 define('DS', DIRECTORY_SEPARATOR);
 define('ROOT_DIR', dirname(__FILE__) . DS);
-define('APPLICATION_ENV', (getenv('APPLICATION_ENV') ? getenv('APPLICATION_ENV') : 'local'));
-
 
 try {
 

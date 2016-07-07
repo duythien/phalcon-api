@@ -27,6 +27,12 @@ $di = new FactoryDefault();
  * Register the configuration itself as a service
  */
 $config = include __DIR__ . '/config.php';
+
+if (file_exists(__DIR__ . '/config.' . APPLICATION_ENV . '.php')) {
+    $overrideConfig = include __DIR__ . '/config.' . APPLICATION_ENV . '.php';
+    $config->merge($overrideConfig);
+}
+
 $di->set('config', $config, true);
 
 //setup timezone
@@ -153,7 +159,7 @@ $di->set(
 );
 
 //Phalcon Debugger
-if ($config->application->debug) {
+if ($config->app->debug) {
     (new \Phalcon\Debug)->listen();
-    include ROOT_DIR . 'common/tools/Debug.php';
+    include ROOT_DIR . 'core/tools/Debug.php';
 }
