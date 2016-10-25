@@ -4,7 +4,9 @@ namespace App\Controllers;
 
 use Phalcon\Mvc\Controller;
 use Phalcon\Mvc\Dispatcher;
+use Phalcon\Paginator\Adapter\Model as PaginatorModel;
 use Phalcon\Paginator\Adapter\QueryBuilder as PaginatorQueryBuilder;
+use Phalcon\Paginator\Adapter\NativeArray as PaginatorNativeArray;
 use League\Fractal\Resource\Collection;
 use League\Fractal\Resource\Item;
 use League\Fractal\Pagination\Cursor;
@@ -266,18 +268,31 @@ class ControllerBase extends Controller
      */
     public function pagination($query)
     {
-
-        $builder  = ModelBase::modelQuery($query);
         $page     = $this->request->getQuery('page') ?  : 1;
         $perPage  = $this->request->getQuery('limit') ? : $this->perPage;
+        if (is_object($query)) {
+            $paginator = new PaginatorModel([
+                'data' => $query,
+                'limit' => $perPage,
+                'page' => $page
+            ]);
+        } elseif(isset($query['model'])) {
+            $builder  = ModelBase::modelQuery($query);
+            $paginator  = new PaginatorQueryBuilder(
+                [
+                    'builder'   => $builder,
+                    'limit'     => $perPage,
+                    'page'      => $page
+                ]
+            );
+        } else {
 
-        $paginator  = new PaginatorQueryBuilder(
-            [
-                'builder'   => $builder,
-                'limit'     => $perPage,
-                'page'      => $page
-            ]
-        );
+            $paginator = new PaginatorNativeArray([
+                'data' => $query,
+                'limit' => $perPage,
+                'page' => $page
+            ]);
+        }
         return $paginator;
     }
 

@@ -31,6 +31,7 @@ class TestsController extends ControllerBase
         $response->setStatusCode(405);
         print_r($response->getStatusCode());
     }
+
     public function authorize()
     {
         $request  = \OAuth2\Request::createFromGlobals();
