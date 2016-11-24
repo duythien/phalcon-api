@@ -15,7 +15,7 @@ use App\Models\Api\ModelBase;
 use League\Fractal\Pagination\PhalconFrameworkPaginatorAdapter;
 use App\Auth\Request as OAuth2Request;
 
-use App\Models\User;
+
 /**
  * Class ControllerBase
  *
@@ -56,19 +56,22 @@ class ControllerBase extends Controller
      * @var integer
      */
     protected $statusCode = 200;
-
     /**
      * @var int
      */
     protected $perPage = 10;
 
-
     protected $userId = null;
-
+    /**
+     * @var null
+     */
+    protected $tenantId = null;
     /**
      * @var string
      */
     protected $userDateFormat = 'd/m/Y';
+
+    protected $customField;
 
     /**
      * Getter for statusCode
@@ -119,18 +122,19 @@ class ControllerBase extends Controller
 
         return $this->respondWithArray($rootScope->toArray());
     }
+
     /**
      * @param $collection
      * @param $callback
      * @return JsonResponse
      */
-    protected function respondWithPagination($pagination, $callback)
+    protected function respondWithPagination($paginator, $callback)
     {
-        $resource = new Collection($pagination->getPaginate()->items, $callback);
+        $pagination = $paginator->getPaginate();
+        $resource = new Collection($pagination->items, $callback);
         $resource->setPaginator(new PhalconFrameworkPaginatorAdapter($pagination));
 
         $rootScope = $this->fractal->createData($resource);
-
         return $this->respondWithArray($rootScope->toArray());
     }
 
@@ -154,20 +158,18 @@ class ControllerBase extends Controller
 
         return $this->respondWithArray($rootScope->toArray());
     }
+
     /**
-     * [respondWithArray description]
-     * @param  array $array   [description]
-     * @param  array $headers [description]
-     * @return [type]          [description]
+     * @param array $array
+     * @param array $headers
+     * @return JsonResponse
      */
     protected function respondWithArray(array $array, array $headers = [])
     {
         $response = new JsonResponse();
-        $response->json($array);
-
+        $response->make($array, $headers);
         return $response;
     }
-
 
     /**
      * @param $message
@@ -183,21 +185,20 @@ class ControllerBase extends Controller
             );
         }
 
-        return $this->respondWithArray(
-            [
+        return $this->respondWithArray([
             'error' => [
                 'code' => $errorCode,
                 'http_code' => $this->statusCode,
                 'message' => $message,
             ]
-            ]
-        );
+        ]);
     }
+
     public function respondWithSuccess($message = 'ok')
     {
         return $this->respondWithArray(
             [
-                'sucess' => [
+                'success' => [
                     'message' => $message,
                 ]
             ]
@@ -241,6 +242,7 @@ class ControllerBase extends Controller
      */
     public function errorUnauthorized($message = 'Unauthorized')
     {
+
         return $this->setStatusCode(401)->respondWithError($message, self::CODE_UNAUTHORIZED);
     }
 
@@ -253,6 +255,7 @@ class ControllerBase extends Controller
     {
         return $this->setStatusCode(400)->respondWithError($message, self::CODE_WRONG_ARGS);
     }
+
     /**
      * Generates a Response with a 400 HTTP header and a given message.
      *
@@ -262,6 +265,7 @@ class ControllerBase extends Controller
     {
         return $this->setStatusCode(409)->respondWithError($message, self::CODE_WRONG_DATA);
     }
+
     /**
      * @param $query
      * @return PaginatorQueryBuilder
@@ -308,6 +312,7 @@ class ControllerBase extends Controller
             ->setUniqueRow(true)
             ->execute();
     }
+
     /**
      * @return array
      */
@@ -344,45 +349,94 @@ class ControllerBase extends Controller
         }
         return $posts;
     }
+
+
+
     /**
-     * Adding default some value
+     * @param Dispatcher $dispatcher
+     * @return Response|void
      */
-    // public function initialize()
-    // {
-    //     if ($this->di->has('user')) {
-    //         $serviceUser = $this->di->get('user');
-    //         //$this->tenantId = $serviceUser->usr_tnt_id;
-    //         //$this->userId   = $serviceUser->usr_id;
-    //     }
+    public function beforeExecuteRoute(Dispatcher $dispatcher)
+    {
+        // $server = $this->oauth->server;
+        // $action = $dispatcher->getActionName();
+        // $module = $dispatcher->getActiveController()->getModuleName();
+        // $resourceName = $module . '-' . $dispatcher->getControllerName();
+        // $request = OAuth2Request::createFromGlobals(); // MYSQL USE NAMES
 
-    // }
-    // public function beforeExecuteRoute(Dispatcher $dispatcher)
-    // {
-    //     $server = $this->oauth->server;
-    //     $action = $dispatcher->getActionName();
-    //     $module = $dispatcher->getActiveController()->getModuleName();
-    //     $resourceName = $module . '-' . $dispatcher->getControllerName();
-    //     $request = OAuth2Request::createFromGlobals();
-    //     //Skip if is a controller name token;
-    //     if ($resourceName == 'token-token') {
-    //         exit;
-    //     }
-    //     if (!$server->verifyResourceRequest($request)) {
-    //         $server->getResponse()->send();
-    //         exit;
-    //     }
+        // //Skip if is a controller name token;
+        // if ($resourceName == 'token-token') {
+        //     return; // @TODO should be exit??
+        // }
 
-    //     $token  = $server->getAccessTokenData($request);
-    //     $userId = $token['user_id'];
-    //     $user   = User::getUserById($userId);
-    //     //Register user object to use check tenant
-    //     if (is_object($user)) {
-    //         $this->di->set('user', $user, true);
-    //     }
+        // // Get token, returns null if is invalid and is caught below
+        // $token = $server->getAccessTokenData($request);
 
-    //     //Attack event ACL at here
-    //     if (!$this->acl->checkAcl($user['grp_name'], $resourceName, $action)) {
-    //         return $this->errorUnauthorized();
-    //     }
-    // }
+        // if (!$token) {
+        //     $server->getResponse()->send();
+        //     exit;
+        // }
+
+        // $userId = $token['user_id'];
+        // $user   = User::getUserById($userId);
+
+        // //Register user object to use check tenant
+        // if (is_object($user)) {
+        //     $this->di->set('user', $user, true);
+        // }
+
+        // //Attack event ACL at here
+        // if (!$this->acl->checkAcl($user['grp_name'], $resourceName, $action)) {
+        //     $this->errorUnauthorized();
+        //     exit;
+        // }
+    }
+
+    /**
+     * Turns URL paramaters with public options into SQL where queries using the actual database fields
+     *
+     * @param $config
+     * @param $columnMap
+     * @return array
+     */
+    public function filterResults($config, $columnMap)
+    {
+        $where  = [];
+        $bind = [];
+
+        // Loop through each URL parameter and build the sql where queries
+        foreach($config as $confKey => $confValue) {
+            // Avoid the private _url field
+            if(substr($confKey, 0, 1) != '_') {
+                // If this field has a value in our API Config, we know it is a genuine column in the database
+                if(isset($columnMap[$confKey]) !== false) {
+                    $where[] = "$columnMap[$confKey] = :$confKey";
+                    $bind[$confKey] = $confValue;
+                }
+            }
+        }
+
+        return [$where,$bind];
+    }
+
+    /**
+     * Turns URL fields public paramaters into private sql column names
+     *
+     * @param $config
+     * @param $columnMap
+     * @return array
+     */
+    public function refineFields($config, $columnMap)
+    {
+        $columns = [];
+        // If the user only wants some fields returned, get the private columns and pass onto our sql query
+        if(isset($config['fields'])) {
+            $fields = $config['fields'];
+            foreach($fields as $field) {
+                $columns[] = $columnMap[$field];
+            }
+        }
+
+        return $columns;
+    }
 }
